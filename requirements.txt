@@ -1,0 +1,11 @@
+pydantic
+fastapi
+pydantic-ai
+langchain
+langchain-openai
+python-dotenv
+firecrawl
+praw
+pytrends
+requests
+uvicorn
