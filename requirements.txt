@@ -1,8 +1,8 @@
 pydantic
 fastapi
-pydantic-ai
+pydantic_ai
 langchain
-langchain-openai
+langchain_openai
 python-dotenv
 firecrawl
 praw
