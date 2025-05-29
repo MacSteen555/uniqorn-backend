@@ -1,9 +1,10 @@
 import os
-from typing import List
+from typing import List, Optional, Any
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from langchain.tools import BaseTool
+from langchain.callbacks.base import BaseCallbackHandler
 
 # Import all your tools
 from tools.firecrawl_tools import firecrawl_search_tool, firecrawl_fetch_tool
@@ -16,6 +17,7 @@ def create_research_agent(
     temperature: float = 0.7,
     model: str = "gpt-4.1-mini",
     streaming: bool = True,
+    callbacks: Optional[List[BaseCallbackHandler]] = None,
 ) -> AgentExecutor:
     """Create a research agent with access to all tools."""
     
@@ -35,18 +37,20 @@ def create_research_agent(
         model=model,
         streaming=streaming,
         api_key=os.getenv("OPENAI_API_KEY"),
+        callbacks=callbacks,
     )
     
     # Create a prompt template
     prompt = ChatPromptTemplate.from_messages([
         ("system", """You are an expert startup advisor and idea builder. Your goal is to help entrepreneurs refine and develop their startup ideas through thoughtful questioning, market research, and practical advice.
 
-APPROACH:
+INSTRUCTIONS:
 1. UNDERSTAND THE IDEA: Ask clarifying questions to fully understand the core concept, target audience, and value proposition.
 
-2. MARKET RESEARCH: Use your research tools to gather relevant data about:
+2. MARKET RESEARCH: Use your research tools and your own knowledge to gather relevant data about:
    - Market size and growth trends
-   - Existing competitors and their approaches
+   - Existing competitors (same or different product, going after the same audience, etc.) and their approaches
+   - Existing parallel (similar product, similar business model, looking for a different audience, etc.) companies and their approaches
    - Customer pain points and needs
    - Recent news and developments in the space
 
@@ -71,7 +75,12 @@ Always be constructive and supportive while providing honest feedback. Use data 
 
 Remember that the entrepreneur is the domain expert - your role is to enhance their thinking, not replace it. Ask thoughtful questions that help them develop their own insights.
 
-When discussing technical implementation, be practical and consider the constraints of early-stage startups (limited resources, need for speed, etc.)."""),
+Communicate with the user in a friendly and engaging manner, looking for the best opportunities for their startup. YOU DO NOT NEED TO USE THE TOOLS TO ANSWER THE USER'S QUESTION. Feel free to use your own knowledge and information to help the user. Do whatever you need to do to help the user the best you can.
+
+When discussing technical implementation, be practical and consider the constraints of early-stage startups (limited resources, need for speed, etc.).
+         
+Use Markdown for the "response" field: headers (#, ##), bold text (**), lists (-, 1.), quotes (>), code blocks (```), and in-line hyperlinks ([link text](url)).
+"""),
         MessagesPlaceholder(variable_name="chat_history", optional=True),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
@@ -86,6 +95,7 @@ When discussing technical implementation, be practical and consider the constrai
         tools=tools,
         verbose=True,
         return_intermediate_steps=True,
+        callbacks=callbacks,
     )
     
     return agent_executor

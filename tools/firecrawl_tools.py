@@ -53,7 +53,7 @@ async def fetch_site_markdown(
     return FirecrawlMarkdown(url=url, markdown=resp.markdown or "", links=resp.links or [])
 
 firecrawl_search_tool = StructuredTool.from_function(
-    name="firecrawl_search",
+    name="google_search",
     description="Search google for the given query and return a list of URLs.",
     func=search_urls,
 )
