@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, validator
 import datetime as _dt
+from typing import List
 
 class FirecrawlMarkdown(BaseModel):
     url: str
@@ -78,3 +79,15 @@ class NewsArticle(BaseModel):
     url: str
     published_at: str
     description: str | None
+
+class Tool(BaseModel):
+    name: str
+    description: str
+    url: str
+    cost: str
+    category: str
+
+
+class ToolResponse(BaseModel):
+    tools: List[Tool]
+    reasoning: str

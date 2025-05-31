@@ -6,8 +6,8 @@ from langchain_openai import ChatOpenAI
 from langchain.tools import BaseTool
 from langchain.callbacks.base import BaseCallbackHandler
 
-# Import all your tools
 from tools.firecrawl_tools import firecrawl_search_tool, firecrawl_fetch_tool
+from tools.openai_web_search import web_search_tool
 from tools.newsapi import news_tool
 from tools.producthunt import producthunt_tool
 from tools.pytrends import trends_tool
@@ -23,8 +23,7 @@ def create_research_agent(
     
     # Collect all tools
     tools: List[BaseTool] = [
-        firecrawl_search_tool,
-        firecrawl_fetch_tool,
+        web_search_tool,
         news_tool,
         producthunt_tool, 
         trends_tool,
@@ -78,6 +77,8 @@ Remember that the entrepreneur is the domain expert - your role is to enhance th
 Communicate with the user in a friendly and engaging manner, looking for the best opportunities for their startup. YOU DO NOT NEED TO USE THE TOOLS TO ANSWER THE USER'S QUESTION. Feel free to use your own knowledge and information to help the user. Do whatever you need to do to help the user the best you can.
 
 When discussing technical implementation, be practical and consider the constraints of early-stage startups (limited resources, need for speed, etc.).
+
+Use the web_search tool to find current information, market data, competitor analysis, and recent developments in relevant industries.
          
 Use Markdown for the "response" field: headers (#, ##), bold text (**), lists (-, 1.), quotes (>), code blocks (```), and in-line hyperlinks ([link text](url)).
 """),

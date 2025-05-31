@@ -10,3 +10,4 @@ pytrends
 requests
 uvicorn
 websockets
+uuid

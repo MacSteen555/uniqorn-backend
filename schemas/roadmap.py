@@ -1,7 +1,10 @@
-from typing import Optional, List
-from pydantic import BaseModel
+from typing import Optional, List, Union, Literal
+import uuid
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
+from pydantic.json_schema import SkipJsonSchema
+
 
 class Priority(str, Enum):
     LOW = "low"
@@ -31,6 +34,11 @@ class Complexity(str, Enum):
     L = "l"    # 1-2 weeks
     XL = "xl"  # 2+ weeks
 
+class RiskLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
 class Tool(BaseModel):
     name: str
     description: str
@@ -39,33 +47,38 @@ class Tool(BaseModel):
     category: str  # "development", "design", "project-management", etc.
 
 class Approach(BaseModel):
-    name: str
-    description: str
-    time_estimate: str
-    complexity: Complexity
-    tools: List[Tool]
-    pros: List[str]
-    cons: List[str]
-    technical_requirements: List[str] = []
-    recommended_for: str  # "Non-technical teams", "Technical teams", "All teams"
-
-class AcceptanceCriteria(BaseModel):
-    id: str
-    description: str
-    completed: bool = False
-
-class RoadmapItem(BaseModel):
-    id: str
+    id: SkipJsonSchema[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: str
-    type: ItemType
+    pros: List[str]
+    cons: List[str]
+    effort_estimate: Optional[str] = None
+    risk_level: Optional[RiskLevel] = None
+
+class AcceptanceCriteria(BaseModel):
+    id: SkipJsonSchema[str] = Field(default_factory=lambda: str(uuid.uuid4()))
+    description: str
+    completed: SkipJsonSchema[bool] = Field(default=False)
+
+class Position(BaseModel):
+    x: float
+    y: float
+
+class RoadmapItem(BaseModel):
+    id: SkipJsonSchema[str] = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    type: Literal["epic", "feature", "task"]
     priority: Priority
     status: Status
+
+    parent_id: SkipJsonSchema[Optional[str]] = None
+    children_ids: SkipJsonSchema[List[str]] = []
     
     # PM-friendly fields
     business_value: str  # "High user engagement", "Revenue increase", etc.
     user_story: Optional[str] = None  # "As a user, I want to..."
-    acceptance_criteria: List[AcceptanceCriteria] = []
+    acceptance_criteria: List[AcceptanceCriteria]
     
     # Technical fields
     approaches: List[Approach]
@@ -76,20 +89,54 @@ class RoadmapItem(BaseModel):
     # Relationships
     dependencies: List[str] = []  # Item IDs that must be completed first
     blocks: List[str] = []  # Item IDs that this blocks
-    parent_epic: Optional[str] = None  # For tasks under epics
     
     # Metadata for exports
     labels: List[str] = []  # Tags for filtering/organization
     assignee: Optional[str] = None
     reporter: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
-    due_date: Optional[datetime] = None
+    created_at: SkipJsonSchema[str] = Field(default_factory=lambda: datetime.now().isoformat())
+    updated_at: SkipJsonSchema[str] = Field(default_factory=lambda: datetime.now().isoformat())
+    due_date: Optional[str] = None
     
     # External system IDs for sync
     jira_id: Optional[str] = None
     notion_id: Optional[str] = None
     github_issue_id: Optional[str] = None
+    
+    # Canvas-specific
+    position: SkipJsonSchema[Position] = Field(default_factory=lambda: Position(x=0.0, y=0.0))
+
+
+class ParallelCompany(BaseModel):
+    name: str
+    positioning: str
+    strengths: List[str]
+    weaknesses: List[str]
+
+class CompetitiveCompany(BaseModel):
+    name: str
+    positioning: str
+    strengths: List[str]
+    weaknesses: List[str]
+
+class KeyFeature(BaseModel):
+    name: str
+    description: str
+    priority: Literal[1, 2, 3, 4, 5]
+
+class Differentiator(BaseModel):
+    name: str
+    description: str
+    priority: Literal[1, 2, 3, 4, 5]
+
+class GoToMarket(BaseModel):
+    channels: List[str]
+    launch_plan: List[str]
+
+class BusinessModel(BaseModel):
+    value_proposition: str
+    revenue_stream: str
+    pricing_strategy: str
 
 class ProjectContext(BaseModel):
     name: str
@@ -108,34 +155,65 @@ class ProjectContext(BaseModel):
     industry: Optional[str] = None
     project_type: str  # "MVP", "Feature Enhancement", "Complete Rebuild", etc.
     
+    # Startup-specific fields from OpenAI prompt
+    user_pitch: Optional[str] = None
+    parallel_companies: Optional[List[ParallelCompany]] = None
+    competitive_companies: Optional[List[CompetitiveCompany]] = None
+    key_features: Optional[List[KeyFeature]] = None
+    standard_features: Optional[List[str]] = None
+    differentiators: Optional[List[Differentiator]] = None
+    development_ideas: Optional[List[str]] = None
+    technical_requirements: Optional[List[str]] = None
+    problems: Optional[List[str]] = None
+    solutions: Optional[List[str]] = None
+    need_for_solutions: Optional[List[str]] = None
+    retention_strategies: Optional[List[str]] = None
+    go_to_market: Optional[GoToMarket] = None
+    business_model: Optional[BusinessModel] = None
+
 class Sprint(BaseModel):
-    id: str
+    id: SkipJsonSchema[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    start_date: datetime
-    end_date: datetime
+    start_date: str
+    end_date: str
     goal: str
     items: List[str]  # RoadmapItem IDs
     
 class Milestone(BaseModel):
-    id: str
+    id: SkipJsonSchema[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
-    target_date: datetime
+    target_date: str
     completion_criteria: List[str]
     associated_items: List[str]  # RoadmapItem IDs
 
 class Roadmap(BaseModel):
-    id: str
+    id: SkipJsonSchema[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     context: ProjectContext
     items: List[RoadmapItem]
-    sprints: List[Sprint] = []
-    milestones: List[Milestone] = []
     
     # Export metadata
-    last_exported_to_jira: Optional[datetime] = None
-    last_exported_to_notion: Optional[datetime] = None
+    last_exported_to_jira: Optional[str] = None
+    last_exported_to_notion: Optional[str] = None
     
-    created_at: datetime
-    updated_at: datetime
-    version: str = "1.0"
+    created_at: SkipJsonSchema[str] = Field(default_factory=lambda: datetime.now().isoformat())
+    updated_at: SkipJsonSchema[str] = Field(default_factory=lambda: datetime.now().isoformat())
+    version: str
 
+# Legacy support for current canvas
+class InstructionVerb(str, Enum):
+    UPSERT = "upsert"
+    DELETE = "delete"
+    UPDATE_PROPERTY = "update_property"
+
+class Instruction(BaseModel):
+    verb: InstructionVerb
+    element: Optional[RoadmapItem] = None
+    id: Optional[str] = None
+    property: Optional[str] = None
+    value: Optional[Union[str, int, bool, List, dict]] = None
+
+class CanvasJSON(BaseModel):
+    version: str
+    instructions: List[Instruction]
+    elements: Optional[List[RoadmapItem]] = None

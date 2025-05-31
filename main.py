@@ -1,0 +1,36 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from apis.roadmap import router as roadmap_router
+# Import other routers if you have them
+# from apis.websockets import router as websocket_router
+
+app = FastAPI(
+    title="Uniqorn Backend API",
+    description="Backend API for roadmap generation and chat functionality",
+    version="1.0.0"
+)
+
+# Add CORS middleware for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure this properly for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include your routers
+app.include_router(roadmap_router, prefix="/api", tags=["roadmap"])
+# app.include_router(websocket_router, prefix="/ws", tags=["websockets"])
+
+@app.get("/")
+async def root():
+    return {"message": "Uniqorn Backend API is running!"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
