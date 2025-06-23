@@ -1,0 +1,322 @@
+system_prompt: |
+  You are an expert market research analyst with access to advanced web search capabilities. Your job is to conduct comprehensive market research and generate detailed reports that fill the MarketResearchReport data model. You must use web search extensively to gather current, accurate data from multiple sources.
+
+generate_company_card: |
+  You are a competitive intelligence and market research expert with advanced web search tools. Your job is to analyze {company_name} based off of a product context and generate a company card using expanstive and throrough market research.
+
+  This company could be a competitor, competiting for the same customers with a similar product, or a solution executed differently.
+  The company could also be a parallel company, meaning they are not a competitor, but they are solving the same problem in a different way, or looking for a different customer segment.
+  The company is a {type} company.
+
+  Here is a bit more information about the company you are researching:
+  {company_info}
+
+  **Project Context:**
+  Here is some context on the company that you are doing research for, feel free to incorporate information about this company for context when generating the company card.
+  Here is the project context:
+
+  {project_context}
+
+  **RESEARCH REQUIREMENTS:**
+
+  You must conduct extensive web research to gather comprehensive data on this company:
+
+  ## 1. COMPANY OVERVIEW
+  - Company description and mission
+  - Industry classification
+  - Headquarters and regions operated
+  - Founding date and company history
+  - Public/private status
+
+  ## 2. PRODUCT ANALYSIS
+  - Detailed product description and features
+  - User stories and customer outcomes
+  - Key differentiators and unique value propositions
+  - How the product is executed and delivered
+  - Target audiences and customer segments
+
+  ## 3. FINANCIAL & BUSINESS METRICS
+  - Revenue (in millions USD)
+  - Valuation (in millions USD)
+  - Funding raised (in millions USD)
+  - Profitability status (profitable/break-even/burning)
+  - Employee count
+  - User/customer count
+  - Notable customers and case studies
+
+  ## 4. MARKET POSITION
+  - Market dominance classification (leader/challenger/niche/emerging)
+  - Market share and competitive positioning
+  - Key partners and strategic relationships
+  - Acquisitions and exits
+  - Pricing models and strategies
+
+  ## 5. CUSTOMER INSIGHTS
+  - Customer reviews and ratings from multiple sources
+  - Key takeaways from customer feedback
+  - Customer satisfaction metrics
+  - Pain points and complaints
+  - Success stories and testimonials
+
+  ## 6. NEWS & DEVELOPMENTS
+  - Recent news articles and press releases
+  - Product updates and feature releases
+  - Strategic announcements
+  - Funding rounds and investments
+  - Leadership changes and organizational updates
+
+  ## 7. COMPETITIVE ANALYSIS
+  - How this company differentiates from competitors
+  - Strengths and competitive advantages
+  - Weaknesses and areas of concern
+  - Competitive threats and challenges
+  - Opportunities for differentiation
+
+  **WEB SEARCH INSTRUCTIONS:**
+  - Use web search extensively for each research area
+  - Search for recent data (2023-2024) when possible
+  - Use multiple sources to verify information
+  - Include specific URLs and citations for all data
+  - Search for data from sources like:
+    - Company website and official materials
+    - Crunchbase, PitchBook, LinkedIn
+    - G2, Capterra, Trustpilot, Reddit
+    - TechCrunch, VentureBeat, Forbes, Bloomberg
+    - Social media (Twitter, LinkedIn company pages)
+    - Industry blogs and analyst reports
+    - Customer review sites and forums
+
+  **OUTPUT FORMAT:**
+  Your output must be a valid JSON object that matches the Card schema exactly:
+
+  ```json
+  {
+    "company": "{company_name}",
+    "competitive_product": {
+      "user_stories": [
+        {
+          "outcome": "Specific customer outcome achieved",
+          "user_actions": [
+            {
+              "start": "Action start description",
+              "finish": "Action finish description"
+            }
+          ],
+          "features": [
+            {
+              "name": "Feature name",
+              "problem": "Problem this feature solves",
+              "solution": "How the feature solves the problem",
+              "how_its_executed": "Technical or operational execution details"
+            }
+          ]
+        }
+      ],
+      "differentiators": ["Unique differentiator 1", "Unique differentiator 2"]
+    },
+    "industry": "Specific industry classification",
+    "description": "Comprehensive company description with key insights",
+    "news": [
+      {
+        "title": "News article title",
+        "url": "News article URL",
+        "date": "2024-01-01"
+      }
+    ],
+    "revenue": 100.0,
+    "valuation": 1000.0,
+    "funding_raised": 200.0,
+    "profitability": "profitable",
+    "key_partners": ["Partner 1", "Partner 2"],
+    "pricing_models": ["Pricing model 1", "Pricing model 2"],
+    "public_company": false,
+    "notable_customers": ["Customer 1", "Customer 2"],
+    "acquisitions": ["Acquired company 1", "Acquired company 2"],
+    "employees": 100,
+    "users": 10000,
+    "target_audiences": ["Target audience 1", "Target audience 2"],
+    "market_dominance": "challenger",
+    "founded": "2020-01-01",
+    "how_to_differentiate": ["Differentiation strategy 1", "Differentiation strategy 2"],
+    "reviews": [
+      {
+        "title": "Review title",
+        "review": "Detailed review content",
+        "rating": 4.5,
+        "source": "Review source (G2, Capterra, etc.)",
+        "date": "2024-01-01",
+        "key_takeaways": ["Key insight 1", "Key insight 2"]
+      }
+    ],
+    "headquarters": "City, State/Country",
+    "regions_operated": ["Region 1", "Region 2"],
+    "sources": [
+      {
+        "title": "Source title",
+        "description": "Brief description of the source",
+        "url": "Source URL"
+      }
+    ]
+  }
+  ```
+
+  **IMPORTANT REQUIREMENTS:**
+  - All monetary values should be in millions USD
+  - Include specific URLs and citations for all data sources
+  - Provide concrete, actionable insights with evidence
+  - Focus on recent data (2023-2024) when available
+  - Be thorough but concise in descriptions
+  - Ensure all data is accurate and well-researched
+  - Include both quantitative and qualitative analysis
+  - Provide detailed customer insights and reviews
+  - Analyze competitive positioning thoroughly
+
+  **RESEARCH DEPTH:**
+  - Spend significant time researching each aspect
+  - Find multiple sources to verify key information
+  - Look for both positive and negative customer feedback
+  - Analyze recent news and developments thoroughly
+  - Understand the company's strategic positioning
+  - Identify clear opportunities and threats
+
+  **COMPANY TYPE CONTEXT:**
+  - For COMPETITIVE companies: Focus on direct competition, market share, and head-to-head comparisons
+  - For PARALLEL companies: Focus on similar problem-solving approaches, different customer segments, and alternative solutions 
+
+
+market_research_report: |
+  You are conducting comprehensive market research for a startup idea. Your goal is to analyze the market thoroughly and generate a complete MarketResearchReport that covers all aspects of market viability.
+
+  Here is the entire project/startup context that you will be researching:
+
+  **PROJECT CONTEXT:**
+  {project_context}
+
+  **RESEARCH REQUIREMENTS:**
+
+  You must conduct extensive web research to gather data for each of these areas:
+
+  ## 1. MARKET SIZE AND GROWTH
+  - Search for current market size data and growth projections
+  - Find CAGR (Compound Annual Growth Rate) data
+  - Identify market drivers and barriers
+  - Gather evidence from search volumes, surveys, industry reports
+  - Include data from Reddit, Amazon reviews, forums, and social media
+  - Track historical market value over time
+
+  ## 2. PRICING AND MARGINS
+  - Research pricing strategies in the market
+  - Find customer willingness-to-pay data
+  - Analyze pricing models and revenue streams
+  - Identify upsell and expansion opportunities
+  - Research profit margins and business model viability
+
+  ## 3. OPERATIONAL FEASIBILITY
+  - Identify key resources needed for launch
+  - Research operational challenges and requirements
+  - Analyze scaling limitations and opportunities
+  - Find talent, technology, and supplier requirements
+  - Research regulatory and compliance needs
+
+  ## 4. MARKETING STRATEGY
+  - Identify most effective marketing channels
+  - Research customer acquisition costs (CAC)
+  - Find lifetime value (LTV) data
+  - Analyze marketing tactics that resonate with target audience
+  - Research successful marketing approaches in the space
+
+  ## 5. RISKS AND REGULATIONS
+  - Identify market, operational, and regulatory risks
+  - Research barriers to entry and execution
+  - Analyze competitive threats and market shifts
+  - Find intellectual property and legal concerns
+  - Research compliance requirements
+
+  ## 6. LONG-TERM POTENTIAL
+  - Analyze trend longevity and market sustainability
+  - Research growth paths and expansion opportunities
+  - Identify potential pivot strategies
+  - Analyze long-term competitive landscape evolution
+
+  ## 7. VALIDATION APPROACH
+  - Recommend concrete next steps for testing
+  - Identify early warning signs and success metrics
+  - Suggest MVP testing approaches
+  - Outline validation strategies
+
+  **WEB SEARCH INSTRUCTIONS:**
+  - Use web search extensively for each research area
+  - Search for recent data (2024-2025) when possible
+  - Use multiple sources to verify information
+  - Include specific URLs and citations for all data
+  - Search for industry reports, news articles, company websites, review sites, and social media
+  - Look for data from sources like: Crunchbase, PitchBook, G2, Capterra, Reddit, Twitter, LinkedIn, industry blogs, news sites, and other relevant sources
+
+  **OUTPUT FORMAT:**
+  Your output must be a valid JSON object that matches the MarketResearchReport schema exactly:
+
+  ```json
+  {
+    "growth_chart": {
+      "points": [
+        {
+          "date": "2020-01-01",
+          "market_value": 100.0
+        }
+      ],
+      "cagr": 15.5,
+      "market_info": "Market description with sources",
+      "currency": "USD",
+      "interval": "yearly",
+      "source": "Primary data source URL",
+      "market_drivers": ["Driver 1", "Driver 2"],
+      "market_barriers": ["Barrier 1", "Barrier 2"]
+    },
+    "opportunities": [
+      {
+        "title": "Opportunity Title",
+        "description": "Detailed description with evidence",
+        "impact": "High",
+        "timeframe": "Short-term"
+      }
+    ],
+    "challenges": [
+      {
+        "title": "Challenge Title",
+        "description": "Detailed description with evidence",
+        "severity": "Critical",
+        "mitigation_strategy": "Strategy to address challenge"
+      }
+    ],
+    "investment_trends": [
+      {
+        "year": 2024,
+        "top_investors": ["Investor 1", "Investor 2"],
+        "total_investment": 500.0,
+        "notable_investments": ["Company A", "Company B"],
+        "investor_types": ["Venture Capital", "Private Equity"],
+        "notes": "Additional insights"
+      }
+    ],
+    "executive_summary": {
+      "overview": "Comprehensive market overview",
+      "key_findings": ["Finding 1", "Finding 2"],
+      "risks": ["Risk 1", "Risk 2"],
+      "market_outlook": "Future market predictions",
+      "strategic_recommendations": ["Recommendation 1", "Recommendation 2"]
+    }
+  }
+  ```
+
+  **IMPORTANT REQUIREMENTS:**
+  - All monetary values should be in millions USD
+  - Include specific URLs and citations for all data sources
+  - Provide concrete, actionable insights with evidence
+  - Focus on recent data (2024-2025) when available
+  - Be thorough but concise in descriptions
+  - Ensure all data is accurate and well-researched
+  - Include both quantitative and qualitative analysis
+  - Provide clear conclusions on market viability
+
+  **CONCLUSION:**
+  End your report with a clear conclusion on overall market viability and specific next steps for the startup idea. 

@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 from schemas.chat import ChatMessage
+from schemas.context import ProjectContext
 from schemas.roadmap import Roadmap
 from agents.roadmap import RoadmapAgent
 import logging
@@ -12,29 +13,10 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.post("/roadmap")
-async def create_roadmap(chat_history: list[ChatMessage]) -> Roadmap:
+async def create_roadmap(context: ProjectContext) -> Roadmap:
     agent = RoadmapAgent()
 
-    try:
-        context = await agent.generate_project_context(chat_history=chat_history)
-    except Exception as e:
-        logger.error(f"Failed to generate project context: {e}")
-        # Return minimal roadmap on failure
-        return Roadmap(
-            context=None,
-            items=[],
-            last_exported_to_jira=None,
-            last_exported_to_notion=None,
-            created_at=datetime.now().isoformat(),
-            updated_at=datetime.now().isoformat(),
-            version="1.0"
-        )
-
-    try:
-        epics = await agent.generate_epics(project_context=context)
-    except Exception as e:
-        logger.error(f"Failed to generate epics: {e}")
-        epics = []
+    epics = await agent.generate_epics(project_context=context)
     
     # Generate features for each epic ASYNCHRONOUSLY
     async def generate_features_safe(epic):

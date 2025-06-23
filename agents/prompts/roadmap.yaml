@@ -1,85 +1,10 @@
 system_prompt: |
   You are a product expert. You're job is to take product information, and break it down into actionable, valuable, detailed and insightful product information. 
 
-project_context: |
-  You are a product strategist and startup analyst. Your job is to analyze a chat between a user and a product-based startup chatbot. Your goal is to extract as much information as possible about the user's startup idea based on what the final conclusions or mentions were of different features, companies, market insights, etc., and then build a comprehensive ProjectContext object.
-
-  Here are the instructions for your output:
-  - The output should be a JSON object that represents a ProjectContext for the user's startup idea.
-  - Only include fields where you have sufficient information from the chat history.
-  - If information is not available or unclear, omit that field rather than making assumptions.
-  - Prioritize accuracy over completeness.
-  - For required fields (name, description, target_audience, business_goals, success_metrics, budget, timeline, team_size, technical_level, project_type), provide reasonable defaults if not explicitly mentioned.
-  - The output should be in the following format:
-
-  {
-    "name": "Project/Startup name",
-    "description": "Brief description of the project/startup",
-    "target_audience": "Description of target audience",
-    "business_goals": ["Primary business goal", "Secondary business goal"],
-    "success_metrics": ["Key metric to measure success", "Another success metric"],
-    "budget": "Budget range or constraint (e.g., 'Under $50k', 'Bootstrapped', 'Seed funded')",
-    "timeline": "Project timeline (e.g., '6 months to MVP', '1 year to launch')",
-    "team_size": "Team size description (e.g., '1-2 people', '3-5 people')",
-    "technical_level": "Technical complexity level (e.g., 'Low', 'Medium', 'High')",
-    "industry": "Industry sector if mentioned",
-    "project_type": "Type of project (e.g., 'MVP', 'Feature Enhancement', 'Complete Rebuild')",
-    "user_pitch": "Summarized pitch based on user input",
-    "parallel_companies": [
-      {
-        "name": "Company that has a similar product/service, but a different customer profile",
-        "positioning": "Company positioning",
-        "strengths": ["Company strengths"],
-        "weaknesses": ["Company weaknesses"]
-      }
-    ],
-    "competitive_companies": [
-      {
-        "name": "Companies that directly compete for the same customers",
-        "positioning": "Competitor positioning", 
-        "strengths": ["Competitor strengths"],
-        "weaknesses": ["Competitor weaknesses"]
-      }
-    ],
-    "key_features": [
-      {
-        "name": "Feature name",
-        "description": "Feature description",
-        "priority": 1
-      }
-    ],
-    "standard_features": ["A list of standard features that are expected in the product"],
-    "differentiators": [
-      {
-        "name": "Differentiator name",
-        "description": "Differentiator description, what makes this different/better from the competitors",
-        "priority": 1
-      }
-    ],
-    "development_ideas": ["An idea on how to develop the startup", "Another idea on how to solve the problem"],
-    "technical_requirements": ["Any technical requirements you might gather"],
-    "problems": ["Problems the startup solves"],
-    "solutions": ["Solutions the startup offers"],
-    "need_for_solutions": ["Why the solution is needed"],
-    "retention_strategies": ["Strategies to retain customers", "Why might customers come back to the product"],
-    "go_to_market": {
-      "channels": ["Marketing channel", "Distribution channel"],
-      "launch_plan": ["Step 1 of launch plan", "Step 2 of launch plan"]
-    },
-    "business_model": {
-      "value_proposition": "The value proposition of the business",
-      "revenue_stream": "How the business will make money",
-      "pricing_strategy": "The pricing strategy for the product/service"
-    }
-  }
-
-  Note: Priority levels are 1-5 where 1 = highest priority/most important, 5 = lowest priority/least important.
-
-  {chat_history}
-
-
 generate_epics: |
-  You are a senior product manager with expertise in breaking down product visions into actionable epics. Your job is to analyze a ProjectContext object containing a startup idea and generate 3-10 top-level epics organized by dependencies and logical development phases.
+  You are a product manager with expertise in breaking down product visions into simple, actionable epics. Your job is to analyze a ProjectContext object containing a startup idea and generate 2-6 top-level epics organized by dependencies and logical development phases.
+
+  You are looking to build an MVP, so epic simplicity is key.
 
   You should organize epics into nested groups based on:
   - **Foundation Phase**: Core infrastructure epics that everything else depends on
@@ -312,12 +237,15 @@ generate_epics: |
   {project_context}
 
 generate_features: |
-  You are a senior product manager with expertise in breaking down epics into detailed features. Your job is to analyze a list of epics and generate comprehensive features for each epic, organizing them by dependencies and logical groupings.
+  You are a senior product manager with expertise in feature breakdown and agile development. Your job is to take an epic and break it down into 2-8 implementable features that deliver value incrementally.
 
+  You are looking to build an MVP, so feature simplicity is key. Make sure to include the most important features.
+
+  You will receive an epic (RoadmapItem) that you need to break down into features. 
   You will also receive a ProjectContext object that contains information about the user's startup idea. You can use this information as a reference to ensure you hit any relevant key_features that the user wants to build. (THIS MUST BE RELEVANT TO THE EPIC)
   
-  For each epic, you should:
-  - Break it down into 3-8 specific, implementable features
+  For the epic, you should:
+  - Break it down into 2-8 specific, implementable features
   - Group related features together in nested arrays
   - Order features within each group by dependency (prerequisite features first)
   - Ensure each feature is focused and deliverable independently
@@ -347,12 +275,12 @@ generate_features: |
         ],
         "approaches": [
           {
-            "title": "BCrypt + Session Storage",
-            "description": "Use BCrypt for password hashing with Redis session storage",
-            "pros": ["Simple implementation", "Good security", "Fast lookups"],
-            "cons": ["Manual session management", "Scaling complexity"],
+            "title": "JWT with Secure Storage",
+            "description": "Use JWT tokens with secure storage for session management",
+            "pros": ["Stateless", "Scalable", "Industry standard"],
+            "cons": ["Token management complexity", "Requires refresh logic"],
             "effort_estimate": "1-2 weeks",
-            "risk_level": "low"
+            "risk_level": "medium"
           }
         ],
         "complexity": "m",
@@ -360,98 +288,51 @@ generate_features: |
         "story_points": 5,
         "dependencies": [],
         "blocks": [],
-        "labels": ["mvp", "security", "foundation"],
+        "labels": ["security", "foundation", "mvp"],
         "assignee": null,
         "reporter": null,
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null
-      },
+        "due_date": null
+      }
+    ],
+    [
       {
         "title": "Password Reset Flow",
-        "description": "Secure password reset via email verification",
+        "description": "Secure password reset functionality with email verification",
         "type": "feature",
         "priority": "high",
         "status": "backlog",
-        "business_value": "Reduces support burden and improves user experience for locked-out users",
-        "user_story": "As a user, I want to reset my password via email so that I can regain access if I forget my credentials",
+        "business_value": "Reduces support burden and improves user experience for account recovery",
+        "user_story": "As a user, I want to reset my password securely when I forget it",
         "acceptance_criteria": [
           {
-            "description": "Users can request password reset via email",
-            "completed": false
+            "description": "Users can request password reset via email"
           },
           {
-            "description": "Reset tokens expire after 1 hour",
-            "completed": false
+            "description": "Reset links expire after reasonable time"
+          },
+          {
+            "description": "New password meets security requirements"
           }
         ],
         "approaches": [
           {
-            "id": "email-token-reset",
-            "title": "Email Token Reset",
-            "description": "Generate secure tokens sent via email for password reset",
-            "pros": ["Standard approach", "Secure", "User-friendly"],
+            "title": "Email-based Reset with Tokens",
+            "description": "Send secure reset tokens via email with time-based expiration",
+            "pros": ["Secure", "Standard approach", "User-friendly"],
             "cons": ["Requires email service", "Token management"],
             "effort_estimate": "3-5 days",
             "risk_level": "low"
           }
         ],
         "complexity": "s",
-        "estimated_hours": 24,
+        "estimated_hours": 16,
         "story_points": 3,
-        "dependencies": ["core-auth-feature-id"],
+        "dependencies": ["Core Authentication System"],
         "blocks": [],
-        "labels": ["mvp", "security"],
+        "labels": ["security", "user-experience"],
         "assignee": null,
         "reporter": null,
-        "created_at": "2024-01-15T10:30:00Z",
-        "updated_at": "2024-01-15T10:30:00Z",
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null,
-        "position": {"x": 1.0}
-      }
-    ],
-    [
-      {
-        "title": "Social Login Integration",
-        "description": "OAuth integration with Google, GitHub, and LinkedIn",
-        "type": "feature",
-        "priority": "medium",
-        "status": "backlog",
-        "business_value": "Reduces friction in user onboarding and increases conversion rates",
-        "user_story": "As a user, I want to sign in with my Google/GitHub account so that I can quickly access the platform without creating new credentials",
-        "acceptance_criteria": [
-          {
-            "description": "Users can sign in with Google OAuth",
-          },
-        ],
-        "approaches": [
-          {
-            "title": "Passport.js OAuth",
-            "description": "Use Passport.js for OAuth integration with multiple providers",
-            "pros": ["Well-established library", "Multiple provider support", "Good documentation"],
-            "cons": ["Additional dependency", "Configuration complexity"],
-            "effort_estimate": "1 week",
-            "risk_level": "medium"
-          }
-        ],
-        "complexity": "m",
-        "estimated_hours": 32,
-        "story_points": 5,
-        "dependencies": ["core-auth-feature-id"],
-        "blocks": [],
-        "labels": ["enhancement", "oauth"],
-        "assignee": null,
-        "reporter": null,
-        "created_at": "2024-01-15T10:30:00Z",
-        "updated_at": "2024-01-15T10:30:00Z",
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null,
+        "due_date": null
       }
     ]
   ]
@@ -483,272 +364,173 @@ generate_features: |
   {project_context}
 
 generate_tasks: |
-  You are a senior software engineer and technical lead with expertise in breaking down features into detailed, actionable tasks. Your job is to analyze a list of features and generate comprehensive tasks for each feature, organizing them by dependencies and logical implementation order.
+  You are a senior software engineer with expertise in breaking down features into implementable tasks. Your job is to take a feature and break it down into 2-8 specific, actionable tasks that can be completed independently.
 
-  For each feature, you should:
-  - Break it down into 2-10 specific, implementable tasks
+  You are looking to build an MVP, so task simplicity is key.
+
+  You will receive a feature (RoadmapItem) that you need to break down into tasks.
+  
+  For the feature, you should:
+  - Break it down into 2-8 specific, implementable tasks
   - Group related tasks together in nested arrays
   - Order tasks within each group by dependency (prerequisite tasks first)
-  - Ensure each task is focused, testable, and completable in 1-3 days
+  - Ensure each task is focused and can be completed in 1-3 days
+  - Make tasks technical and specific enough for developers to implement
 
-  Your output should be an array of task groups, match this exact format:
+  Your output should be a nested array of task groups (NOT a dictionary with feature IDs):
 
   [
     [
       {
-        "title": "Set up database schema for user accounts",
-        "description": "Create users table with email, password hash, created_at, updated_at fields and proper indexes",
+        "title": "Set up authentication database schema",
+        "description": "Create database tables for users, sessions, and password reset tokens with proper indexes and constraints",
         "type": "task",
         "priority": "critical",
         "status": "backlog",
-        "business_value": "Provides data foundation for user authentication and profile management",
-        "user_story": "As a developer, I want a proper user database schema so that I can store and retrieve user account information securely",
+        "business_value": "Provides data foundation for all authentication functionality",
+        "user_story": "As a developer, I need database tables to store user authentication data securely",
         "acceptance_criteria": [
           {
-            "description": "Users table created with all required fields"
+            "description": "User table created with email, password hash, and metadata fields"
           },
           {
-            "description": "Proper indexes on email and id fields"
+            "description": "Session table created with token, user_id, and expiration fields"
           },
           {
-            "description": "Database migration script created and tested"
+            "description": "Password reset table created with token, user_id, and expiration fields"
+          },
+          {
+            "description": "Proper indexes added for performance"
           }
         ],
         "approaches": [
           {
-            "title": "PostgreSQL Migration",
-            "description": "Use Alembic/SQLAlchemy migrations for PostgreSQL schema",
-            "pros": ["Version controlled", "Rollback support", "Team collaboration"],
-            "cons": ["Learning curve", "Migration complexity"],
-            "effort_estimate": "4-6 hours",
-            "risk_level": "low"
-          }
-        ],
-        "complexity": "s",
-        "estimated_hours": 6,
-        "story_points": 2,
-        "dependencies": [],
-        "blocks": [],
-        "labels": ["database", "schema", "foundation"],
-        "assignee": null,
-        "reporter": null,
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null
-      },
-      {
-        "title": "Create User model and repository",
-        "description": "Implement User model class with validation and database repository pattern for CRUD operations",
-        "type": "task",
-        "priority": "critical",
-        "status": "backlog",
-        "business_value": "Provides clean interface for user data operations throughout the application",
-        "user_story": "As a developer, I want a User model and repository so that I can perform user operations consistently",
-        "acceptance_criteria": [
-          {
-            "description": "User model with proper validation rules",
-            "completed": false
-          },
-          {
-            "description": "Repository with create, read, update, delete methods",
-            "completed": false
-          },
-          {
-            "description": "Unit tests for model and repository",
-            "completed": false
-          }
-        ],
-        "approaches": [
-          {
-            "id": "sqlalchemy-orm",
-            "title": "SQLAlchemy ORM",
-            "description": "Use SQLAlchemy ORM for model definition and database operations",
-            "pros": ["Type safety", "Query optimization", "Relationship handling"],
-            "cons": ["Performance overhead", "Learning curve"],
-            "effort_estimate": "6-8 hours",
+            "title": "PostgreSQL with migrations",
+            "description": "Use PostgreSQL database with migration scripts for schema management",
+            "pros": ["ACID compliance", "Good performance", "Mature ecosystem"],
+            "cons": ["Requires PostgreSQL setup", "Migration management"],
+            "effort_estimate": "1 day",
             "risk_level": "low"
           }
         ],
         "complexity": "s",
         "estimated_hours": 8,
-        "story_points": 3,
-        "dependencies": ["database-schema-task-id"],
+        "story_points": 2,
+        "dependencies": [],
         "blocks": [],
-        "labels": ["backend", "model", "foundation"],
+        "labels": ["database", "setup", "foundation"],
         "assignee": null,
         "reporter": null,
-        "created_at": "2024-01-15T10:30:00Z",
-        "updated_at": "2024-01-15T10:30:00Z",
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null,
-        "position": {"x": 1.0}
+        "due_date": null
       }
     ],
     [
       {
-        "title": "Implement password hashing service",
-        "description": "Create secure password hashing and verification using bcrypt with proper salt rounds",
+        "title": "Implement user registration API endpoint",
+        "description": "Create REST API endpoint for user registration with validation, password hashing, and error handling",
         "type": "task",
         "priority": "critical",
         "status": "backlog",
-        "business_value": "Ensures user passwords are stored securely and cannot be compromised",
-        "user_story": "As a security-conscious user, I want my password to be stored securely so that my account cannot be compromised",
+        "business_value": "Enables new users to create accounts and access the system",
+        "user_story": "As a new user, I want to register for an account through the API",
         "acceptance_criteria": [
           {
-            "description": "Password hashing function with configurable salt rounds",
+            "description": "POST /api/auth/register endpoint accepts email and password"
           },
           {
-            "description": "Password verification function",
+            "description": "Email validation prevents duplicate registrations"
           },
           {
-            "description": "Security tests for hash strength",
+            "description": "Password is hashed before storage"
+          },
+          {
+            "description": "Returns appropriate success/error responses"
           }
         ],
         "approaches": [
           {
-            "title": "Python bcrypt Library",
-            "description": "Use the bcrypt library for secure password hashing",
-            "pros": ["Industry standard", "Configurable difficulty", "Well tested"],
-            "cons": ["CPU intensive", "Blocking operations"],
-            "effort_estimate": "3-4 hours",
-            "risk_level": "low"
-          }
-        ],
-        "complexity": "xs",
-        "estimated_hours": 4,
-        "story_points": 1,
-        "dependencies": ["user-model-task-id"],
-        "blocks": [],
-        "labels": ["security", "backend", "crypto"],
-        "assignee": null,
-        "reporter": null,
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null,
-      },
-      {
-        "title": "Build registration API endpoint",
-        "description": "Create POST /api/auth/register endpoint with validation, duplicate checking, and error handling",
-        "type": "task",
-        "priority": "low" | "medium" | "high" | "critical",
-        "status": "backlog",
-        "business_value": "Allows new users to create accounts and start using the platform",
-        "user_story": "As a new user, I want to register for an account so that I can access the platform",
-        "acceptance_criteria": [
-          {
-            "description": "POST endpoint accepts email and password",
-          },
-          {
-            "description": "Email validation and duplicate checking",
-          },
-          {
-            "description": "Proper error responses for invalid input",
-          }
-        ],
-        "approaches": [
-          {
-            "id": "fastapi-endpoint",
-            "title": "FastAPI Endpoint",
-            "description": "Implement using FastAPI with Pydantic validation",
-            "pros": ["Auto validation", "OpenAPI docs", "Type safety"],
-            "cons": ["Framework dependency", "Learning curve"],
-            "effort_estimate": "4-6 hours",
+            "title": "Express.js with bcrypt",
+            "description": "Use Express.js framework with bcrypt for password hashing and validation middleware",
+            "pros": ["Fast development", "Good ecosystem", "Secure hashing"],
+            "cons": ["Requires proper validation setup", "Error handling complexity"],
+            "effort_estimate": "1-2 days",
             "risk_level": "low"
           }
         ],
         "complexity": "s",
-        "estimated_hours": 6,
-        "story_points": 2,
-        "dependencies": ["password-hashing-task-id"],
+        "estimated_hours": 12,
+        "story_points": 3,
+        "dependencies": ["Set up authentication database schema"],
         "blocks": [],
-        "labels": ["api", "backend", "registration"],
+        "labels": ["api", "registration", "backend"],
         "assignee": null,
         "reporter": null,
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null,
-      }
-    ],
-    [
+        "due_date": null
+      },
       {
-        "title": "Create registration form UI",
-        "description": "Build responsive registration form with real-time validation and error display",
+        "title": "Implement user login API endpoint",
+        "description": "Create REST API endpoint for user login with credential verification and session token generation",
         "type": "task",
-        "priority": "low" | "medium" | "high" | "critical",
+        "priority": "critical",
         "status": "backlog",
-        "business_value": "Provides user-friendly interface for account creation with good UX",
-        "user_story": "As a new user, I want an intuitive registration form so that I can easily create my account",
+        "business_value": "Allows existing users to authenticate and access protected features",
+        "user_story": "As a registered user, I want to login through the API to access my account",
         "acceptance_criteria": [
           {
-            "description": "Responsive form with email and password fields",
+            "description": "POST /api/auth/login endpoint accepts email and password"
           },
           {
-            "description": "Real-time validation feedback",
+            "description": "Credentials are verified against stored hash"
           },
           {
-            "description": "Loading states and error handling",
+            "description": "JWT token generated and returned on successful login"
+          },
+          {
+            "description": "Session stored in database for tracking"
           }
         ],
         "approaches": [
           {
-            "title": "React Hook Form",
-            "description": "Use React Hook Form for form management and validation",
-            "pros": ["Performance", "Less re-renders", "Good validation"],
-            "cons": ["Learning curve", "Complex validation scenarios"],
-            "effort_estimate": "8-12 hours",
-            "risk_level": "low" | "medium" | "high"
+            "title": "JWT with database sessions",
+            "description": "Generate JWT tokens and store session data in database for security and tracking",
+            "pros": ["Stateless tokens", "Database tracking", "Secure"],
+            "cons": ["Token management", "Database overhead"],
+            "effort_estimate": "1-2 days",
+            "risk_level": "medium"
           }
         ],
         "complexity": "m",
-        "estimated_hours": 12,
-        "story_points": 5,
-        "dependencies": ["registration-api-task-id"],
+        "estimated_hours": 16,
+        "story_points": 4,
+        "dependencies": ["Set up authentication database schema"],
         "blocks": [],
-        "labels": ["frontend", "ui", "forms"],
+        "labels": ["api", "login", "backend", "jwt"],
         "assignee": null,
         "reporter": null,
-        "due_date": null,
-        "jira_id": null,
-        "notion_id": null,
-        "github_issue_id": null,
+        "due_date": null
       }
     ]
   ]
 
   **Grouping Rules:**
-  1. **Foundation Group**: Database, models, and core services (always first)
-  2. **Backend Logic Groups**: API endpoints, business logic, and services
-  3. **Frontend Groups**: UI components, forms, and user interactions
-  4. **Integration Groups**: Connecting frontend and backend, testing end-to-end
-  5. **Testing & Polish Groups**: Comprehensive testing, error handling, edge cases
+  1. **Foundation Tasks**: Tasks that are prerequisites for other tasks (always first)
+  2. **Enhancement Tasks**: Tasks that can be built in parallel after foundation
+  3. **Integration Tasks**: Tasks that connect to external services
+  4. **Advanced Tasks**: Complex tasks that require multiple foundation tasks
 
   **Dependency Ordering Within Groups:**
   - Tasks that are prerequisites for others should appear first in their group
   - Tasks that can be built in parallel should be in the same group
-  - Use the `dependencies` field to reference task IDs that must be completed first
+  - Use the `dependencies` field to reference task IDs from previous groups
 
   **Important Instructions:**
   - Set `type` to "task" for all items
   - Order tasks within each nested array by dependency (prerequisites first)
   - Group related tasks that can be worked on in parallel
-  - Include realistic effort estimates (1-3 days per task)
-  - Focus on tasks that directly contribute to the feature's completion
-  - Use incremental position.x values (0.0, 1.0, 2.0, etc.)
-  - Make tasks specific enough to be testable and completable
-  - Consider both frontend and backend tasks where applicable
+  - Include realistic effort estimates and complexity ratings
+  - Focus on tasks that directly contribute to the feature's goals
 
-  **Task Sizing Guidelines:**
-  - XS (1-4 hours): Simple configuration, small UI changes, basic tests
-  - S (4-8 hours): API endpoints, simple components, unit tests
-  - M (8-16 hours): Complex forms, integration logic, comprehensive testing
-  - L (16-24 hours): Complex features, major refactoring (should be broken down further)
+  Now analyze the following feature and generate organized task groups:
 
-  Now analyze the following features and generate organized task groups:
-
-  {features}
+  Feature to break down: {feature}
 

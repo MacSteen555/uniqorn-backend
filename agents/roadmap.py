@@ -7,10 +7,13 @@ from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
 from openai import OpenAI
 from dotenv import load_dotenv
+from typing import List
 
 from schemas.chat import ChatMessage
-from schemas.roadmap import ProjectContext, RoadmapItem
+from schemas.context import ProjectContext
+from schemas.roadmap import RoadmapItem
 from utils.prompt import load_prompt
+from utils.llm import generate_response
 
 load_dotenv()
 
@@ -44,17 +47,6 @@ class RoadmapAgent:
             system_prompt=system_prompt,
             instrument=True,
         )
-
-    async def generate_project_context(self, chat_history: list[ChatMessage]) -> ProjectContext:
-        chat_history_dicts = [msg.model_dump() for msg in chat_history]
-        prompt = load_prompt(self.prompt_path, "project_context", chat_history=json.dumps(chat_history_dicts))
-        
-        response = await self.mini_agent.run(
-            output_type=ProjectContext,
-            user_prompt=prompt,
-        )
-
-        return response.data
     
     async def generate_epics(self, project_context: ProjectContext) -> list[RoadmapItem]:
         prompt = load_prompt(self.prompt_path, "generate_epics", project_context=project_context.model_dump_json())
@@ -66,7 +58,7 @@ class RoadmapAgent:
         
         output = []
         y_position = 0.0
-        for group in response.data:
+        for group in response.output:
             x_position = 0.0
             for item in group:
                 item.position.x = x_position
@@ -84,12 +76,12 @@ class RoadmapAgent:
             output_type=list[list[RoadmapItem]],
             user_prompt=prompt,
         )
-        if response.data is None:
+        if response.output is None:
             return None
 
         output = []
         y_position = 0.0
-        for group in response.data:
+        for group in response.output:
             x_position = 0.0
             for item in group:
                 item.parent_id = epic.id
@@ -108,12 +100,12 @@ class RoadmapAgent:
             output_type=list[list[RoadmapItem]],
             user_prompt=prompt,
         )
-        if response.data is None:
+        if response.output is None:
             return None
 
         output = []
         y_position = 0.0
-        for group in response.data:
+        for group in response.output:
             x_position = 0.0
             for item in group:
                 item.parent_id = feature.id

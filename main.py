@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from apis.roadmap import router as roadmap_router
+from apis.landscape import router as landscape_router
+from apis.context import router as context_router
 # Import other routers if you have them
 # from apis.websockets import router as websocket_router
 
@@ -21,6 +23,9 @@ app.add_middleware(
 
 # Include your routers
 app.include_router(roadmap_router, prefix="/api", tags=["roadmap"])
+app.include_router(landscape_router, prefix="/api", tags=["landscape"])
+app.include_router(context_router, prefix="/api", tags=["context"])
+
 # app.include_router(websocket_router, prefix="/ws", tags=["websockets"])
 
 @app.get("/")

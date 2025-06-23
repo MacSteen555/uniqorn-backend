@@ -7,7 +7,6 @@ from langchain.tools import BaseTool
 from langchain.callbacks.base import BaseCallbackHandler
 
 from tools.firecrawl_tools import firecrawl_search_tool, firecrawl_fetch_tool
-from tools.openai_web_search import web_search_tool
 from tools.newsapi import news_tool
 from tools.producthunt import producthunt_tool
 from tools.pytrends import trends_tool
@@ -23,7 +22,8 @@ def create_research_agent(
     
     # Collect all tools
     tools: List[BaseTool] = [
-        web_search_tool,
+        firecrawl_search_tool,
+        firecrawl_fetch_tool,
         news_tool,
         producthunt_tool, 
         trends_tool,
