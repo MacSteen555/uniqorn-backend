@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from firecrawl import FirecrawlApp
 from schemas.tools import FirecrawlMarkdown, FirecrawlURL
-from langchain.tools import StructuredTool
+
 
 load_dotenv()
 app = FirecrawlApp(api_key=os.getenv("FIRECRAWL_API_KEY"))
@@ -51,18 +51,6 @@ async def fetch_site_markdown(
         )
     )
     return FirecrawlMarkdown(url=url, markdown=resp.markdown or "", links=resp.links or [])
-
-firecrawl_search_tool = StructuredTool.from_function(
-    name="google_search",
-    description="Search google for the given query and return a list of URLs.",
-    func=search_urls,
-)
-
-firecrawl_fetch_tool = StructuredTool.from_function(
-    name="fetch_markdown",
-    description="Fetch the markdown and associated links for the given URL.",
-    func=fetch_site_markdown,
-)
 
 async def main():
     print("Testing Firecrawl tools...")

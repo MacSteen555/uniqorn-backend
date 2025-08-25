@@ -1,37 +1,42 @@
 from pytrends.request import TrendReq
 from schemas.tools import TrendResult  # type: ignore – install pytrends
+from datetime import datetime
 
-from langchain.tools import StructuredTool
+from agents import function_tool
 
-
-def trends_get(keyword: str, timeframe: str = "today 12-m") -> TrendResult:
+@function_tool
+async def trends_get(keyword: str, timeframe: str = "today 12-m") -> TrendResult:
     """Return interest‑over‑time values for a single keyword."""
+    print("using pytrends")
     pytrends = TrendReq(hl="en-US", tz=0)
     pytrends.build_payload([keyword], timeframe=timeframe)
     df = pytrends.interest_over_time()
-    timeline = (
-        df[[keyword]]
-        .reset_index()
-        .rename(columns={keyword: "value", "date": "date"})
-        .to_dict("records")
-    )
+    
+    # Convert datetime objects to ISO format strings for JSON serialization
+    timeline = []
+    for _, row in df.reset_index().iterrows():
+        date_value = row['date']
+        if isinstance(date_value, datetime):
+            date_str = date_value.isoformat()
+        else:
+            date_str = str(date_value)
+        
+        timeline.append({
+            "date": date_str,
+            "value": int(row[keyword])
+        })
+    
     return TrendResult(keyword=keyword, timeline=timeline)
 
 
-trends_tool = StructuredTool.from_function(
-    name="google_trends",
-    description="Fetch Google search interest over the past 12 months for a keyword (uses pytrends).",
-    func=trends_get,
-)
-
-def main():
+async def main():
     print("Testing Google Trends tool...")
     
     # Test with a trending tech term
     keyword = "generative AI"
     print(f"Fetching trend data for: {keyword}")
     
-    result = trends_get(keyword)
+    result = await trends_get(keyword)
     print(f"Retrieved trend data for: {result.keyword}")
     print(f"Timeline entries: {len(result.timeline)}")
     
@@ -44,4 +49,5 @@ def main():
             print(f"Date: {point['date']}, Value: {point['value']}")
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())

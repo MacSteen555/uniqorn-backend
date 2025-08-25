@@ -1,7 +1,7 @@
 import os
 import praw
 from schemas.tools import RedditPost, RedditPostDetail, RedditComment
-from langchain.tools import StructuredTool
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -70,18 +70,6 @@ def reddit_get_post_details(post_id: str) -> RedditPostDetail:
     
     except Exception as e:
         raise ValueError(f"Error getting post details: {e}")
-
-reddit_tool = StructuredTool.from_function(
-    name="reddit_search",
-    description="Search Reddit posts (subreddit optional) and return a list sorted by relevance.",
-    func=reddit_search,
-)
-
-reddit_post_tool = StructuredTool.from_function(
-    name="reddit_get_post",
-    description="Get detailed information about a specific Reddit post including top comments. Requires post ID.",
-    func=reddit_get_post_details,
-)
 
 def main():
     print("Testing Reddit tools...")

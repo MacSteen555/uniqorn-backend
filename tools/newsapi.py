@@ -1,22 +1,27 @@
+import asyncio
 import os
 import datetime as _dt
 import requests
-from schemas.tools import NewsArticle
-from langchain.tools import StructuredTool
+from schemas.tools import NewsArticle, NewsSearchInput
+
 from dotenv import load_dotenv
+from agents import function_tool
 
 load_dotenv()
 NEWSAPI_KEY = os.getenv("NEWSAPI_KEY")
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything?"
 
-def news_search(query: str, days_back: int = 30, language: str = "en", page_size: int = 20) -> list[NewsArticle]:
+
+@function_tool
+async def news_search(input: NewsSearchInput) -> list[NewsArticle]:
     """Search global news for the last `days_back` days."""
-    from_date = (_dt.datetime.now(_dt.UTC) - _dt.timedelta(days=days_back)).strftime("%Y-%m-%d")
+    print("using newsapi")
+    from_date = (_dt.datetime.now(_dt.UTC) - _dt.timedelta(days=input.days_back)).strftime("%Y-%m-%d")
     params = {
-        "q": query,
+        "q": input.query,
         "from": from_date,
-        "language": language,
-        "pageSize": page_size,
+        "language": input.language,
+        "pageSize": input.page_size,
         "sortBy": "relevancy",
         "apiKey": NEWSAPI_KEY,
     }
@@ -35,20 +40,14 @@ def news_search(query: str, days_back: int = 30, language: str = "en", page_size
         for a in data.get("articles", [])
     ]
 
-news_tool = StructuredTool.from_function(
-    name="news_search",
-    description="Search NewsAPI articles for a query (last 30 days).",
-    func=news_search,
-)
-
-def main():
+async def main():
     print("Testing News API tool...")
     
     # Test with a current tech topic
     query = "machine learning startups"
     print(f"Searching for news about: {query}")
     
-    results = news_search(query)
+    results = await news_search(query)
     print(f"Found {len(results)} news articles")
     
     if results:
@@ -61,4 +60,4 @@ def main():
             print(f"   Description: {article.description[:100]}..." if article.description else "   No description")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

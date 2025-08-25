@@ -1,12 +1,12 @@
 import asyncio
 from fastapi import APIRouter
 from datetime import datetime
-from agents.landscape import LandscapeAgent
+from agent_calls.landscape import LandscapeAgent
 from schemas.chat import ChatMessage
 from schemas.landscape import MarketResearchReport
 from schemas.context import ProjectContext
 from schemas.roadmap import Roadmap
-from agents.roadmap import RoadmapAgent
+from agent_calls.roadmap import RoadmapAgent
 import logging
 
 router = APIRouter()

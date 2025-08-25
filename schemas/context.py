@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class Company(BaseModel):
     name: str
+    url: str
     positioning: str
     strengths: List[str]
     weaknesses: List[str]

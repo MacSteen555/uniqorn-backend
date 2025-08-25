@@ -34,19 +34,21 @@ project_context: |
     "parallel_companies": [
       {
         "name": "Company that has a similar product/service, but a different customer profile",
+        "url": "Company URL",
         "positioning": "Company positioning",
         "strengths": ["Company strengths"],
         "weaknesses": ["Company weaknesses"]
       }
-    ],
+    ], # This is a list of companies that have a similar product/service, but a different customer profile. Find as many as applicable.
     "competitive_companies": [
       {
-        "name": "Companies that directly compete for the same customers",
+        "name": "Company that directly compete for the same customers",
+        "url": "Company URL",
         "positioning": "Competitor positioning", 
         "strengths": ["Competitor strengths"],
         "weaknesses": ["Competitor weaknesses"]
       }
-    ],
+    ], # This is a list of companies that directly compete for the same customers. Find as many as applicable.
     "key_features": [
       {
         "name": "Feature name",

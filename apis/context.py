@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from schemas.chat import ChatMessage
 from schemas.context import ProjectContext
-from agents.context import ContextAgent
+from agent_calls.context import ContextAgent
 import logging
 
 router = APIRouter()

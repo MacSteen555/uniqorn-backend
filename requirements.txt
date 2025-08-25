@@ -11,3 +11,4 @@ requests
 uvicorn
 websockets
 uuid
+openai-agents

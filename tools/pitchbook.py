@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import httpx
 import asyncio
 import logging
-from langchain.tools import StructuredTool
+
 import json # For pretty printing in main_test
 
 load_dotenv()
