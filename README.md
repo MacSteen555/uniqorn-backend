@@ -87,6 +87,8 @@ The system is built using a modular agentic architecture:
 
     # Bright Data (PitchBook)
     BRIGHTDATA_API_KEY=...
+    BRIGHTDATA_BASE_URL=https://api.brightdata.com/datasets/v3
+    PITCHBOOK_DATASET_ID=gd_m4ijiqfp2n9oe3oluj
     ```
 
 ---
