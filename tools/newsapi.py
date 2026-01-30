@@ -11,11 +11,14 @@ load_dotenv()
 NEWSAPI_KEY = os.getenv("NEWSAPI_KEY")
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything?"
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 @function_tool
 async def news_search(input: NewsSearchInput) -> list[NewsArticle]:
     """Search global news for the last `days_back` days."""
-    print("using newsapi")
+    logger.info(f"using newsapi for query: {input.query}")
     from_date = (_dt.datetime.now(_dt.UTC) - _dt.timedelta(days=input.days_back)).strftime("%Y-%m-%d")
     params = {
         "q": input.query,

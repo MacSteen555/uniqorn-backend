@@ -3,11 +3,14 @@ from schemas.tools import TrendResult  # type: ignore – install pytrends
 from datetime import datetime
 
 from agents import function_tool
+import logging
+
+logger = logging.getLogger(__name__)
 
 @function_tool
 async def trends_get(keyword: str, timeframe: str = "today 12-m") -> TrendResult:
     """Return interest‑over‑time values for a single keyword."""
-    print("using pytrends")
+    logger.info(f"using pytrends for keyword: {keyword}")
     pytrends = TrendReq(hl="en-US", tz=0)
     pytrends.build_payload([keyword], timeframe=timeframe)
     df = pytrends.interest_over_time()

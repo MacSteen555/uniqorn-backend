@@ -1,14 +1,18 @@
-pydantic
-fastapi
-pydantic_ai
-langchain
-langchain_openai
+# Core Backend
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0  # Includes websockets
 python-dotenv
-firecrawl
-praw
-pytrends
-requests
-uvicorn
-websockets
-uuid
+pydantic>=2.0.0
+
+# AI & Agents
+openai>=1.0.0
 openai-agents
+
+# Tools & Integrations
+requests>=2.31.0  # Used by ProductHunt, NewsAPI
+httpx>=0.24.0     # Used by PitchBook tool
+praw              # Reddit
+pytrends          # Google Trends
+firecrawl-py      # Firecrawl
+
+# Note: 'uuid' and 'json' are standard library, do not include.

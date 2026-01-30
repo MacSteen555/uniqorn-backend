@@ -9,6 +9,11 @@ from agents import FunctionTool, function_tool
 
 load_dotenv()
 
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
+
 PH_ENDPOINT = "https://api.producthunt.com/v2/api/graphql"
 PH_TOKEN = os.getenv("PRODUCTHUNT_DEV_TOKEN")
 
@@ -32,7 +37,7 @@ SEARCH_TYPE_DESCRIPTIONS = {
 def _ph_graphql(query: str, variables: dict) -> dict:
     """Execute a GraphQL query against the Product Hunt API with enhanced error handling."""
     if not PH_TOKEN:
-        print("⚠️  Warning: PRODUCTHUNT_DEV_TOKEN not found. Using limited functionality.")
+        logger.warning("PRODUCTHUNT_DEV_TOKEN not found. Using limited functionality.")
         return {"data": {"posts": {"edges": []}}}
     
     headers = {
@@ -51,22 +56,22 @@ def _ph_graphql(query: str, variables: dict) -> dict:
         )
         
         if resp.status_code != 200:
-            print(f"❌ Product Hunt API error: {resp.status_code}")
+            logger.error(f"Product Hunt API error: {resp.status_code}")
             if resp.status_code == 401:
-                print("   Authentication failed. Check your API token.")
+                logger.error("   Authentication failed. Check your API token.")
             elif resp.status_code == 429:
-                print("   Rate limit exceeded. Try again later.")
+                logger.error("   Rate limit exceeded. Try again later.")
             return {"data": {"posts": {"edges": []}}}
         
         return resp.json()
     except requests.exceptions.Timeout:
-        print("⏰ Request timed out. Product Hunt API is slow to respond.")
+        logger.error("Request timed out. Product Hunt API is slow to respond.")
         return {"data": {"posts": {"edges": []}}}
     except requests.exceptions.ConnectionError:
-        print("🌐 Connection error. Check your internet connection.")
+        logger.error("Connection error. Check your internet connection.")
         return {"data": {"posts": {"edges": []}}}
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+        logger.error(f"Unexpected error: {e}")
         return {"data": {"posts": {"edges": []}}}
 
 def _simplify_query_for_ai() -> str:
@@ -229,18 +234,18 @@ async def producthunt_search(input: PHInput) -> List[PHPost]:
     - Trending products: search_type="TRENDING"
     - Developer tools: category="Developer Tools", search_type="CATEGORY"
     """
-    print("using producthunt")
+    logger.info("using producthunt")
     # Validate and provide helpful feedback
     if not input.keyword and input.search_type == "KEYWORD":
-        print("💡 Tip: For keyword search, provide a keyword. Trying popular products instead.")
+        logger.info("Tip: For keyword search, provide a keyword. Trying popular products instead.")
         input.search_type = "POPULAR"
     
     if input.category and input.category not in PRODUCT_HUNT_CATEGORIES:
-        print(f"💡 Tip: '{input.category}' not in known categories. Available: {', '.join(PRODUCT_HUNT_CATEGORIES[:5])}...")
+        logger.info(f"Tip: '{input.category}' not in known categories. Available: {', '.join(PRODUCT_HUNT_CATEGORIES[:5])}...")
         # Try to find a similar category
         similar_categories = [cat for cat in PRODUCT_HUNT_CATEGORIES if input.category.lower() in cat.lower()]
         if similar_categories:
-            print(f"   Similar categories found: {', '.join(similar_categories)}")
+            logger.info(f"   Similar categories found: {', '.join(similar_categories)}")
     
     # Build optimized query and variables
     gql = _simplify_query_for_ai()
@@ -254,15 +259,15 @@ async def producthunt_search(input: PHInput) -> List[PHPost]:
         edges = data.get("data", {}).get("posts", {}).get("edges", [])
         
         if not edges:
-            print(f"🔍 No products found for: {input.search_type}")
+            logger.info(f"No products found for: {input.search_type}")
             if input.keyword:
-                print(f"   Keyword: '{input.keyword}'")
+                logger.info(f"   Keyword: '{input.keyword}'")
             if input.category:
-                print(f"   Category: '{input.category}'")
+                logger.info(f"   Category: '{input.category}'")
             
             # Try fallback search if keyword search failed
             if input.search_type == "KEYWORD" and input.keyword:
-                print("🔄 Trying broader search...")
+                logger.info("Trying broader search...")
                 # Try without the keyword to get some results
                 fallback_variables = variables.copy()
                 fallback_variables["query"] = None
@@ -270,7 +275,7 @@ async def producthunt_search(input: PHInput) -> List[PHPost]:
                 fallback_data = _ph_graphql(gql, fallback_variables)
                 fallback_edges = fallback_data.get("data", {}).get("posts", {}).get("edges", [])
                 if fallback_edges:
-                    print("✅ Found some products with broader search")
+                    logger.info("Found some products with broader search")
                     edges = fallback_edges
             
             if not edges:
@@ -290,19 +295,19 @@ async def producthunt_search(input: PHInput) -> List[PHPost]:
         # Limit results and provide feedback
         final_posts = posts[:input.first]
         
-        print(f"✅ Found {len(final_posts)} products")
+        logger.info(f"Found {len(final_posts)} products")
         if final_posts:
             top_post = final_posts[0]
-            print(f"   Top result: {top_post.name} ({top_post.votesCount} votes)")
+            logger.info(f"   Top result: {top_post.name} ({top_post.votesCount} votes)")
             if top_post.category:
-                print(f"   Category: {top_post.category}")
+                logger.info(f"   Category: {top_post.category}")
             if top_post.pricing_type:
-                print(f"   Pricing: {top_post.pricing_type}")
+                logger.info(f"   Pricing: {top_post.pricing_type}")
         
         return final_posts
         
     except Exception as e:
-        print(f"❌ Search failed: {e}")
+        logger.error(f"Search failed: {e}")
         return []
 
 @function_tool
